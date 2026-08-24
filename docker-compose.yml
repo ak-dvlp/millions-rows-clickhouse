@@ -1,5 +1,5 @@
 services:
-  # --- CLICKHOUSE ---
+  # Аналитическая база данных (OLAP)
   clickhouse:
     image: clickhouse/clickhouse-server:latest
     container_name: ecommerce_clickhouse_millions
@@ -19,14 +19,15 @@ services:
         soft: 262144
         hard: 262144
 
-  # --- APACHE SUPERSET ---
+    # Визуализация данных (BI-слой)
   superset:
     image: apache/superset:latest
-    container_name: superset_millions_rows # <--- ИЗМЕНЕНО: уникальное имя контейнера!
+    container_name: superset_millions_rows
     user: "root"
     network_mode: host
     volumes:
-      - superset_home_millions:/app/superset_home # <--- ИЗМЕНЕНО: уникальный volume!
+      - superset_home_millions:/app/superset_home
+      - ./scripts/etl_to_clickhouse.py:/app/etl_to_clickhouse.py 
     environment:
       - SUPERSET_SECRET_KEY=lakehouse_2026_millions
       - SUPERSET_CONFIG_PATH=/app/superset_config.py
@@ -51,5 +52,5 @@ services:
       "
 
 volumes:
-  chdata_millions: # <-- ИЗМЕНЕНО: уникальное имя тома
+  chdata_millions:
   superset_home_millions:
