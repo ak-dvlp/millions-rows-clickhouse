@@ -1,0 +1,55 @@
+services:
+  # --- CLICKHOUSE ---
+  clickhouse:
+    image: clickhouse/clickhouse-server:latest
+    container_name: ecommerce_clickhouse_millions
+    restart: unless-stopped
+    ports:
+      - "8124:8123"
+      - "9001:9000"
+    environment:
+      CLICKHOUSE_DB: ecommerce_olap
+      CLICKHOUSE_USER: bi_user
+      CLICKHOUSE_PASSWORD: bi_password
+    volumes:
+      - chdata_millions:/var/lib/clickhouse
+      - ./parquet_data:/var/lib/clickhouse/user_files
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+
+  # --- APACHE SUPERSET ---
+  superset:
+    image: apache/superset:latest
+    container_name: superset_millions_rows # <--- ИЗМЕНЕНО: уникальное имя контейнера!
+    user: "root"
+    network_mode: host
+    volumes:
+      - superset_home_millions:/app/superset_home # <--- ИЗМЕНЕНО: уникальный volume!
+    environment:
+      - SUPERSET_SECRET_KEY=lakehouse_2026_millions
+      - SUPERSET_CONFIG_PATH=/app/superset_config.py
+    restart: unless-stopped
+    entrypoint: >
+      sh -c "
+        echo '⏳ Создание конфигурации локализации...' &&
+        printf \"LANGUAGES = {\n    'en': {'flag': 'us', 'name': 'English'},\n    'ru': {'flag': 'ru', 'name': 'Russian'}\n}\nBABEL_DEFAULT_LOCALE = 'ru'\nBABEL_DEFAULT_TIMEZONE = 'Europe/Moscow'\n\nD3_TIME_FORMAT = {\n    'dateTime': '%%A, %%e %%B %%Y г., %%X',\n    'date': '%%d.%%m.%%Y',\n    'time': '%%H:%%M:%%S',\n    'periods': ['AM', 'PM'],\n    'days': ['воскресенье', 'понедельник', 'вторник', 'среда', 'четверг', 'пятница', 'суббота'],\n    'shortDays': ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб'],\n    'months': ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'],\n    'shortMonths': ['янв', 'фев', 'мар', 'апр', 'май', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек']\n}\n\" > /app/superset_config.py &&
+        echo '⏳ Установка зависимостей...' &&
+        /app/.venv/bin/python -m ensurepip --upgrade &&
+        /app/.venv/bin/python -m pip install --no-cache-dir clickhouse-connect &&
+        echo '⏳ Ожидание запуска Superset...' &&
+        sleep 10 && 
+        echo '⏳ Обновление базы данных...' &&
+        superset db upgrade &&
+        echo '⏳ Создание пользователя‑администратора...' &&
+        superset fab create-admin --username admin --firstname Admin --lastname User --email admin@local.com --password admin || true &&
+        echo '⏳ Инициализация Superset...' &&
+        superset init &&
+        echo '⏳ Запуск Superset...' &&
+        /usr/bin/run-server.sh --port 8088
+      "
+
+volumes:
+  chdata_millions: # <-- ИЗМЕНЕНО: уникальное имя тома
+  superset_home_millions:
