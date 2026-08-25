@@ -208,7 +208,7 @@ LIMIT 100;
 
 #### Работа с данными через ClickHouse
 
-Перейдите по адресу: [http://localhost:8123/play](http://localhost:8123/play)  
+Перейдите по адресу: [http://localhost:8123/play](http://localhost:8124/play)  
 
 <img width="910" height="500" alt="image" src="https://github.com/user-attachments/assets/a4a69ec9-b2f0-493a-8b01-a105e7f55622" />  
 
