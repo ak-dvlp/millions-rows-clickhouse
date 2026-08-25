@@ -50,7 +50,7 @@ def run_etl():
         product_status LowCardinality(String),
         rating_average Decimal(3, 2),
         review_count UInt32,
-        person_id UInt32,
+        customer_id UInt32,
         firstname String,
         lastname String,
         age UInt8,
@@ -75,11 +75,11 @@ def run_etl():
         p.product_id, p.sku, p.name AS product_name, p.description AS product_description,
         p.category, p.subcategory, p.brand, p.price AS product_price, p.cost AS product_cost,
         p.stock_quantity, p.weight_kg, p.status AS product_status, p.rating_average, p.review_count,
-        c.person_id, c.firstname, c.lastname, c.age, c.postalcode, c.city
+        c.customer_id, c.firstname, c.lastname, c.age, c.postalcode, c.city
     FROM file('orderline_part*.parquet', Parquet) AS ol
     GLOBAL INNER JOIN file('order_part*.parquet', Parquet) AS o ON ol.order_id = o.order_id
     GLOBAL INNER JOIN file('product_part1.parquet', Parquet) AS p ON ol.product_id = p.product_id
-    GLOBAL INNER JOIN file('customer_part1.parquet', Parquet) AS c ON o.person_id = c.person_id
+    GLOBAL INNER JOIN file('customer_part1.parquet', Parquet) AS c ON o.customer_id = c.customer_id
     SETTINGS max_memory_usage = 10000000000;
     """
 
