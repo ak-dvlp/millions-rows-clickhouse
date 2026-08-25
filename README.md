@@ -157,13 +157,64 @@ poetry run python scripts/etl_to_clickhouse.py
 #### Настройка Apache Superset в веб клиенте
 
 Перейдите по адресу: [http://localhost:8088](http://localhost:8088)
-Введите имя пользователя `admin` и пароль `admin`
+Введите имя пользователя `admin` и пароль `admin`  
 
-#### Подключение ClickHouse к Apache Superset
+<img width="622" height="500" alt="image" src="https://github.com/user-attachments/assets/c1ef2f81-0759-4d4d-bc0c-656807f45cf6" />
 
-```bash
+Откройте выпадающее меню нажав в правой части навигационного меню на иконку `+`. Затем нажмите: `Data` => `Connect Database`.  
+
+<img width="622" height="500" alt="image" src="https://github.com/user-attachments/assets/805cf2cf-941c-48cf-b778-a2800d0d7cc1" />
+
+Шаг 1. В выпадающем меню поля выбора `Supported databases` выберите `ClickHouse`. Отсутствие данного пункта может означает неудачную установку драйверов базы данных.  
+
+<img width="622" height="500" alt="image" src="https://github.com/user-attachments/assets/1d31f07c-c877-4f62-9f8e-971b494b47e4" />
+
+Шаг 2. В нижней части модального окна нажмите на метку `Connect this database with a SQLAlchemy URI string instead`:  
+
+<img width="492" height="500" alt="image" src="https://github.com/user-attachments/assets/fd221265-4e2c-4b48-9938-c5a38f6a0d7c" />
+
+введите в поле `SQLAlchemy URI*` строку ниже и нажмите на кнопку `Test connection`:  
+
+```text
 clickhouse+connect://bi_user:bi_password@127.0.0.1:8124/ecommerce_olap
 ```
+
+<img width="461" height="500" alt="image" src="https://github.com/user-attachments/assets/aa0e64bb-f89f-40e2-b383-544bdffe5db7" />  
+
+Нажмите на кнопку `Connect`.
+
+#### Проверка наличия денормализованной таблицы
+
+В левой части навигационного меню нажмите на `SQL`. В выпадающем меню выберите пункт `SQL Lab`.  
+
+<img width="461" height="500" alt="image" src="https://github.com/user-attachments/assets/3e603af9-fff1-4f22-befe-a8820098f8d9" />
+
+Нажмите на вкладку `Add a new tab`  
+
+<img width="461" height="500" alt="image" src="https://github.com/user-attachments/assets/d48d7b4c-c017-4688-ac65-b0a4a7b18663" />  
+
+Выполните запрос:  
+
+```sql
+SELECT * FROM ecommerce_olap.superset_flat_analytics
+LIMIT 100;
+```
+
+Нажмите на кнопку `Run`  
+
+<img width="910" height="500" alt="image" src="https://github.com/user-attachments/assets/ce9a5ddf-2e70-4d7e-88b2-01e1bfbfd6f9" />  
+<img width="910" height="500" alt="image" src="https://github.com/user-attachments/assets/38e86fe8-0df3-434c-92a3-94459e40eba6" />  
+<img width="910" height="500" alt="image" src="https://github.com/user-attachments/assets/045e8ea7-1a24-4d0b-8abe-76c41965a016" />
+
+#### Работа с данными через ClickHouse
+
+Перейдите по адресу: [http://localhost:8123/play](http://localhost:8123/play)  
+
+<img width="910" height="500" alt="image" src="https://github.com/user-attachments/assets/a4a69ec9-b2f0-493a-8b01-a105e7f55622" />  
+
+Заполните поля `user` и `password` значениями `bi_user` и `bi_password` соответственно (если поля скрыты, нажмите на иконку ключ).
+
+Выполните какой-либо запрос, например:  
 
 ```sql
 SELECT
@@ -185,5 +236,13 @@ WHERE order_id IN (
 )
 ORDER BY order_id ASC, orderline_id ASC
 LIMIT 100;
-
 ```
+
+Нажмите на кнопку `Run`.
+
+<img width="910" height="500" alt="image" src="https://github.com/user-attachments/assets/803e22ad-2460-478e-9593-cd11212a396d" />  
+
+## Заключение
+
+Инфраструктура готова к созданию графиков и витрин интерактивной аналитики в `Apache Superset`.
+
