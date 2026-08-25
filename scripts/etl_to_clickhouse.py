@@ -3,7 +3,7 @@ import clickhouse_connect # type: ignore
 
 # Настройки подключения
 CH_HOST = '127.0.0.1'
-CH_PORT = 9000  
+CH_PORT = 9001  
 CH_USER = 'bi_user'
 CH_PASSWORD = 'bi_password'
 CH_DATABASE = 'ecommerce_olap'

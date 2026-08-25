@@ -13,7 +13,7 @@ services:
       CLICKHOUSE_PASSWORD: bi_password
     volumes:
       - chdata_millions:/var/lib/clickhouse
-      - ./parquet_data:/var/lib/clickhouse/user_files
+      - ./data/parquet:/var/lib/clickhouse/user_files/parquet:ro
     ulimits:
       nofile:
         soft: 262144
@@ -27,7 +27,7 @@ services:
     network_mode: host
     volumes:
       - superset_home_millions:/app/superset_home
-      - ./scripts/etl_to_clickhouse.py:/app/etl_to_clickhouse.py 
+      - ./scripts/etl_to_clickhouse.py:/app/etl_to_clickhouse.py
     environment:
       - SUPERSET_SECRET_KEY=lakehouse_2026_millions
       - SUPERSET_CONFIG_PATH=/app/superset_config.py
