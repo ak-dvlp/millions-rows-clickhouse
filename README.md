@@ -14,9 +14,9 @@ Parquet-файлы ➡️ ClickHouse (OLAP) ➡️ Apache Superset (Визуал
 
 Клонируйте репозиторий и перейдите в директорию проекта. Папка `data/parquet` занимает объём порядка `230 МиБ`, так что клонирование займёт большее количество времени чем обычно.
 
-#### Создание виртуального окружения для работы скриптов папки `scripts`
+#### Создание виртуального окружения для работы скрипта папки `scripts`
 
-Для успешного выполнения дальнейших шагов в вашей системе должен быть установлен `Poetry`. После установки `Poetry`, выполните установку пакетов командой:
+Для успешного выполнения дальнейших шагов в вашей системе должен быть установлен `Poetry`. После установки `Poetry`, выполните установку пакета `clickhouse-connect` командой:
 
 ```bash
 poetry install
@@ -28,15 +28,6 @@ poetry install
 
 ```bash
 Python 3.x.x ('.venv': Poetry) ./.venv/bin/python
-```
-
-Если нужного интерпретатора нет, добавьте его вручную или попробуйте выполнить команды:
-
-```bash
-poetry config virtualenvs.in-project true
-poetry env remove --all
-poetry install
-
 ```
 
 #### Запуск службы Docker и настройка прав группы
@@ -102,19 +93,71 @@ docker compose up -d
 
 Дождитесь окончания создания изолированных хранилищ данных, создания виртуальной сети и запуска всех контейнеров:
 
----
-
-#### Запуск ETL-скрипта в изолированном окружении Docker
-
-```bash
-docker compose exec superset /app/.venv/bin/python /app/etl_to_clickhouse.py
+```text
+ ✔ Network millions-rows-clickhouse_default               Created                                                                                                                                     0.0s
+ ✔ Volume millions-rows-clickhouse_superset_home_millions Created                                                                                                                                     0.0s
+ ✔ Volume millions-rows-clickhouse_chdata_millions        Created                                                                                                                                     0.0s
+ ✔ Container superset_millions_rows                       Started                                                                                                                                     0.3s
+ ✔ Container ecommerce_clickhouse_millions                Started
 ```
 
-#### Запуск ETL-скрипта локально
+Выполните команду для вывода сообщений журнала в реальном времени:
+
+```bash
+docker compose logs superset -f
+```
+
+Дождитесь следующих сообщений журнала:
+
+```text
+superset_millions_rows  | ⏳ Запуск Superset...
+superset_millions_rows  | [2026-08-25 21:29:05 +0000] [114] [INFO] Starting gunicorn 23.0.0
+superset_millions_rows  | [2026-08-25 21:29:05 +0000] [114] [INFO] Listening at: http://0.0.0.0:8088 (114)
+superset_millions_rows  | [2026-08-25 21:29:05 +0000] [114] [INFO] Using worker: gthread
+superset_millions_rows  | [2026-08-25 21:29:05 +0000] [115] [INFO] Booting worker with pid: 115
+```
+
+Выйдите из режима вывода сообщений журнала при помощи комбинации горячих клавиш `Ctrl + C`.
+
+#### Загрузка данных из Parquet-файлов в ClickHouse
+
+Выполните команду запуска ETL-скрипта для `ClickHouse`:
 
 ```bash
 poetry run python scripts/etl_to_clickhouse.py
 ```
+
+Дождитесь окончания выполнения скрипта:
+
+```text
+⏳ Подключение к ClickHouse...
+⏳ Создание плоской таблицы superset_flat_analytics...
+✅ Таблица superset_flat_analytics успешно создана.
+⏳ Создание быстрых временных таблиц в памяти...
+✅ Временные таблицы успешно созданы.
+⏳ Запуск денормализации и импорта строк из Parquet...
+✅ Импорт завершён. Время выполнения: 20.15 сек.
+⏳ Удаление временных таблиц...
+✅ Временные таблицы удалены.
+⏳ Проверка загруженных данных...
+Общее количество строк таблицы: 13,000,000
+```
+
+На ПК со следующими характеристиками:
+
+```text
+ОЗУ: 16 ГиБ
+Процессор: Intel Core i7‑8700, 3.20 ГГц
+```
+
+этап формирования денормализованной таблицы и загрузки данных из Parquet-файлов объёмом 230 МиБ в ClickHouse занимает порядка 20 секунд.
+
+---
+
+#### Настройка Apache Superset в веб клиенте
+
+Перейдите по адресу: [http://localhost:8088](http://localhost:8088)
+Введите имя пользователя `admin` и пароль `admin`
 
 #### Подключение ClickHouse к Apache Superset
 
