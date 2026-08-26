@@ -1,7 +1,6 @@
 # millions-rows-clickhouse
 
-<img width="892" height="500" alt="image" src="https://github.com/user-attachments/assets/3ba28daf-f7b2-474f-aafe-f2be9c504099" />  
-
+<img width="892" height="500" alt="image" src="https://github.com/user-attachments/assets/c0bd296b-d5e9-4d5f-8eb2-7e076d705b0f" />  
 
 #### Инженерный проект по построению высокопроизводительного аналитического конвейера данных на базе ClickHouse и Apache Superset.
 
