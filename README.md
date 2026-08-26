@@ -12,13 +12,13 @@ Parquet-файлы ➡️ ClickHouse (OLAP) ➡️ Apache Superset (Визуал
 
 ## Источник данных
 
-Основой для итоговой денормализованной таблицы в `ClickHouse` послужил набор данных [Synthetic E-Commerce Dataset (Very Large)](https://www.kaggle.com/datasets/swainproject/synthetic-e-commerce-dataset-very-large) в формате `СSV`, распространяемый под лицензией `CC BY-NC-SA 4.0`. CSV-файлы были сконвертированы в Parquet-файлы при помощи [Polars](https://github.com/pola-rs/polars). Итоговые Parquet-файлы разбиты на несколько файлов, каждый из которых не превышает размер в `45 МиБ`. Конвертацию можно выполнить с помощью репозитория: [rust-polars-csv2parquet](https://github.com/ak-dvlp/millions-rows-clickhouse).
+Основой для итоговой денормализованной таблицы в `ClickHouse` послужил набор данных [Synthetic E-Commerce Dataset (Very Large)](https://www.kaggle.com/datasets/swainproject/synthetic-e-commerce-dataset-very-large) в формате `СSV`, распространяемый под лицензией `CC BY-NC-SA 4.0`. CSV-файлы были сконвертированы в Parquet-файлы при помощи [Polars](https://github.com/pola-rs/polars). Итоговые Parquet-файлы разбиты на несколько файлов, каждый из которых не превышает размер в `45 МБ`. Конвертацию можно выполнить с помощью репозитория: [rust-polars-csv2parquet](https://github.com/ak-dvlp/millions-rows-clickhouse).
 
 ## Развёртывание и настройка
 
 #### Клонирование репозитория
 
-Клонируйте репозиторий и перейдите в директорию проекта. Папка `data/parquet` занимает объём порядка `230 МиБ`, так что клонирование займёт большее количество времени чем обычно.
+Клонируйте репозиторий и перейдите в директорию проекта. Папка `data/parquet` занимает объём порядка `230 МБ`, так что клонирование займёт большее количество времени чем обычно.
 
 #### Создание виртуального окружения для работы скрипта папки `scripts`
 
@@ -156,7 +156,7 @@ poetry run python scripts/etl_to_clickhouse.py
 Процессор: Intel Core i7‑8700, 3.20 ГГц
 ```
 
-этап формирования денормализованной таблицы и загрузки данных из Parquet-файлов объёмом `230 МиБ` в `ClickHouse` занимает порядка 20 секунд.
+этап формирования денормализованной таблицы и загрузки данных из Parquet-файлов объёмом `230 МБ` в `ClickHouse` занимает порядка 20 секунд.
 
 ---
 
